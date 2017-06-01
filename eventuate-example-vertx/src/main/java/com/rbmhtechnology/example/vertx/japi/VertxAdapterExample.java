@@ -175,7 +175,7 @@ public class VertxAdapterExample {
     public EventLogReader(String id, ActorRef eventLog, int eventCount) {
       super(id, eventLog);
 
-      setOnCommand(ReceiveBuilder
+      setOnCommand(receiveBuilder()
         .matchEquals("notifyOnComplete", s -> subscribers = subscribers.prepend(sender()))
         .matchEquals("eventRead", e -> {
           eventsRead = eventsRead + 1;
@@ -185,7 +185,7 @@ public class VertxAdapterExample {
         })
         .build());
 
-      setOnEvent(ReceiveBuilder
+      setOnEvent(receiveBuilder()
         .matchAny(ev -> {
           out.println(String.format("[e_reader]    received  [%s]", ev));
 

@@ -44,7 +44,7 @@ public class ResolveExample {
       public ExampleActor(String id, ActorRef eventLog) {
         super(id, eventLog);
 
-        setOnEvent(ReceiveBuilder
+        setOnEvent(receiveBuilder()
           .match(Appended.class, evt -> {
             versionedState = versionedState.update(evt.entry, lastVectorTimestamp(), lastSystemTimestamp(), lastEmitterId());
 
@@ -79,7 +79,7 @@ public class ResolveExample {
       public ExampleActor(String id, ActorRef eventLog) {
         super(id, eventLog);
 
-        setOnCommand(ReceiveBuilder
+        setOnCommand(receiveBuilder()
           .match(Append.class, cmd -> versionedState.conflict(),
             cmd -> sender().tell(new AppendRejected(cmd.entry, versionedState.getAll()), self())
           )
@@ -92,7 +92,7 @@ public class ResolveExample {
           )))
           .build());
 
-        setOnEvent(ReceiveBuilder
+        setOnEvent(receiveBuilder()
           .match(Appended.class, evt ->
             versionedState = versionedState.update(evt.entry, lastVectorTimestamp(), lastSystemTimestamp(), lastEmitterId())
           )

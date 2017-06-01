@@ -49,7 +49,7 @@ public class AbstractEventsourcedWriterSpec extends BaseSpec {
             this.appProbe = appProbe;
             this.rwProbe = rwProbe;
 
-            setOnEvent(ReceiveBuilder.match(String.class, ev -> {}).build());
+            setOnEvent(receiveBuilder().match(String.class, ev -> {}).build());
         }
 
         @Override

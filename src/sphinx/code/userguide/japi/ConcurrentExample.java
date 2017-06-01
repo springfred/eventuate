@@ -40,7 +40,7 @@ public class ConcurrentExample {
     public ExampleActor(String id, ActorRef eventLog) {
       super(id, eventLog);
 
-      setOnEvent(ReceiveBuilder
+      setOnEvent(receiveBuilder()
         .match(Appended.class, evt -> {
           if (updateTimestamp.lt(lastVectorTimestamp())) {
             // regular update

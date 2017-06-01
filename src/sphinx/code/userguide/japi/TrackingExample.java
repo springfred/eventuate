@@ -40,7 +40,7 @@ public class TrackingExample {
     public ExampleActor(String id, ActorRef eventLog) {
       super(id, eventLog);
 
-      setOnEvent(ReceiveBuilder
+      setOnEvent(receiveBuilder()
         .match(Appended.class, evt -> {
           versionedState = versionedState.update(evt.entry, lastVectorTimestamp(), lastSystemTimestamp(), lastEmitterId());
 

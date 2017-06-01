@@ -54,14 +54,14 @@ public class ConditionalExample {
       super(id, eventLog);
       this.id = id;
 
-      setOnCommand(ReceiveBuilder
+      setOnCommand(receiveBuilder()
         .match(Append.class, cmd -> persist(new Appended(cmd.entry), ResultHandler.onSuccess(
           evt -> sender().tell(new AppendSuccess(evt.entry, lastVectorTimestamp()), self())
         )))
         // ...
         .build());
 
-      setOnEvent(ReceiveBuilder
+      setOnEvent(receiveBuilder()
         .match(Appended.class, evt -> currentState = append(currentState, evt.entry))
         .build());
     }

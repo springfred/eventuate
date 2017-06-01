@@ -35,11 +35,11 @@ public class CommunicationExample {
     public PingActor(String id, ActorRef eventLog, ActorRef completion) {
       super(id, eventLog);
 
-      setOnCommand(ReceiveBuilder
+      setOnCommand(receiveBuilder()
         .matchEquals("serve", cmd -> persist(new Ping(1), ResultHandler.none()))
         .build());
 
-      setOnEvent(ReceiveBuilder
+      setOnEvent(receiveBuilder()
         .match(Pong.class, evt -> evt.num == 10 && !recovering(), evt -> completion.tell("done", self()))
         .match(Pong.class, evt -> persistOnEvent(new Ping(evt.num + 1)))
         .build());
@@ -51,7 +51,7 @@ public class CommunicationExample {
     public PongActor(String id, ActorRef eventLog) {
       super(id, eventLog);
 
-      setOnEvent(ReceiveBuilder
+      setOnEvent(receiveBuilder()
         .match(Ping.class, evt -> persistOnEvent(new Pong(evt.num)))
         .build());
     }

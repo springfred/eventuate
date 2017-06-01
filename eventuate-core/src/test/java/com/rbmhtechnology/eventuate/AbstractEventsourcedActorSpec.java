@@ -42,7 +42,7 @@ public class AbstractEventsourcedActorSpec extends BaseSpec {
         public TestEventsourcedActor(final String id, final ActorRef logProbe, final ActorRef mgsProbe) {
             super(id, logProbe);
 
-            setOnCommand(ReceiveBuilder
+            setOnCommand(receiveBuilder()
                     .match(Cmd.class, cmd -> cmd.num() == 1, cmd -> persist(cmd.payload(), ResultHandler.on(
                             success -> mgsProbe.tell(cmd.payload(), self()),
                             failure -> mgsProbe.tell(failure, self())

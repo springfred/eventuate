@@ -46,7 +46,7 @@ class ExampleActor extends AbstractEventsourcedActor {
     super(id, eventLog);
     this.aggregateId = aggregateId;
 
-    setOnCommand(ReceiveBuilder
+    setOnCommand(receiveBuilder()
       .match(Print.class, cmd -> printState(id, currentState))
       .match(Append.class, cmd -> persist(new Appended(cmd.entry), ResultHandler.on(
         evt -> sender().tell(new AppendSuccess(evt.entry), self()),
@@ -54,7 +54,7 @@ class ExampleActor extends AbstractEventsourcedActor {
       )))
       .build());
 
-    setOnEvent(ReceiveBuilder
+    setOnEvent(receiveBuilder()
       .match(Appended.class, evt -> currentState = append(currentState, evt.entry))
       .build());
   }

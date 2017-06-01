@@ -50,7 +50,7 @@ public class Writer extends AbstractEventsourcedWriter<Long, Void> {
         updateCustomerStmt = session.prepare("UPDATE CUSTOMER SET address = ? WHERE id = ?");
         updateProgressStmt = session.prepare("UPDATE PROGRESS SET sequence_nr = ? WHERE id = 0");
 
-        setOnEvent(ReceiveBuilder
+        setOnEvent(receiveBuilder()
                 .match(CustomerCreated.class, c -> batch = batch.append(insertCustomerStmt.bind(c.cid, c.first, c.last, c.address)))
                 .match(AddressUpdated.class, u -> batch = batch.append(updateCustomerStmt.bind(u.address, u.cid)))
                 .build());

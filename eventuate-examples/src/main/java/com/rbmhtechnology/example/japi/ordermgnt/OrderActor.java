@@ -72,7 +72,7 @@ public class OrderActor extends AbstractEventsourcedActor {
         this.replicaId = replicaId;
         this.order = VersionedAggregate.create(orderId, commandValidation, eventProjection, OrderDomainCmd.instance, OrderDomainEvt.instance);
 
-        setOnCommand(ReceiveBuilder
+        setOnCommand(receiveBuilder()
                 .match(CreateOrder.class, c -> order.validateCreate(c, processCommand(orderId, sender(), self())))
                 .match(OrderCommand.class, c -> order.validateUpdate(c, processCommand(orderId, sender(), self())))
                 .match(Resolve.class, c -> order.validateResolve(c.selected(), replicaId, processCommand(orderId, sender(), self())))
@@ -80,7 +80,7 @@ public class OrderActor extends AbstractEventsourcedActor {
                 .match(SaveSnapshot.class, c -> saveState(sender(), self()))
                 .build());
 
-        setOnEvent(ReceiveBuilder
+        setOnEvent(receiveBuilder()
                 .match(OrderCreated.class, e -> {
                     order = order.handleCreated(e, lastVectorTimestamp(), lastSequenceNr());
                     if (!recovering()) printOrder(order.getVersions());
@@ -95,7 +95,7 @@ public class OrderActor extends AbstractEventsourcedActor {
                 })
                 .build());
 
-        setOnSnapshot(ReceiveBuilder
+        setOnSnapshot(receiveBuilder()
                 .match(ConcurrentVersionsTree.class, s -> {
                     order = order.withAggregate(((ConcurrentVersionsTree<Order, OrderEvent>) s).withProjection(eventProjection));
                     System.out.println(String.format("[%s] Snapshot loaded:", orderId));

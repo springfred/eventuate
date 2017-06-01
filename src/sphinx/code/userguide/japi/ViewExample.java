@@ -36,12 +36,12 @@ public class ViewExample {
     public ExampleView(String id, ActorRef eventLog) {
       super(id, eventLog);
 
-      setOnCommand(ReceiveBuilder
+      setOnCommand(receiveBuilder()
         .match(GetAppendCount.class, cmd -> sender().tell(new GetAppendCountReply(appendCount), self()))
         .match(GetResolveCount.class, cmd -> sender().tell(new GetResolveCountReply(resolveCount), self()))
         .build());
 
-      setOnEvent(ReceiveBuilder
+      setOnEvent(receiveBuilder()
         .match(Appended.class, evt -> appendCount += 1)
         .match(Resolved.class, evt -> resolveCount += 1)
         .build());

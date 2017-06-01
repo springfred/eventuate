@@ -30,11 +30,11 @@ public class OrderView extends AbstractEventsourcedView {
         super(String.format("j-ov-%s", replicaId), eventLog);
         this.updateCounts = HashMap.empty();
 
-        setOnCommand(ReceiveBuilder
+        setOnCommand(receiveBuilder()
                 .match(GetUpdateCount.class, this::handleGetUpdateCount)
                 .build());
 
-        setOnEvent(ReceiveBuilder
+        setOnEvent(receiveBuilder()
                 .match(OrderEvent.class, this::handleOrderEvent)
                 .build());
     }

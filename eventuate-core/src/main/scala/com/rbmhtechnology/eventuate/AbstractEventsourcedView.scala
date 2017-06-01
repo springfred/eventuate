@@ -18,7 +18,9 @@ package com.rbmhtechnology.eventuate
 
 import java.util.{ Optional => JOption }
 
+import akka.actor.AbstractActor
 import akka.actor.{ Actor, ActorRef }
+import akka.japi.pf.ReceiveBuilder
 
 import scala.compat.java8.OptionConverters._
 
@@ -151,6 +153,20 @@ abstract class AbstractEventsourcedView(val id: String, val eventLog: ActorRef) 
       "Use commandContext.become(...) to change it.")
 
   /**
+   * Java API that sets this actor's [[EventsourcedView.onCommand command]] handler.
+   *
+   * Supplied with a partial function that defines the actor's command handling behaviour.
+   * Use [[$akkaReceiveBuilder ReceiveBuilder]] to define the behaviour.
+   *
+   * If [[onCommand]] is implemented, the supplied behaviour is ignored.
+   *
+   * @param handler a function that defines this actor's command handling behaviour.
+   * @see [[EventsourcedView]]
+   */
+  final protected def setOnCommand(handler: AbstractActor.Receive): Unit =
+    setOnCommand(handler.onMessage.asInstanceOf[Receive])
+
+  /**
    * Java API that sets this actor's [[EventsourcedView.onEvent event]] handler.
    *
    * Supplied with a partial function that defines the actor's event handling behaviour.
@@ -165,6 +181,20 @@ abstract class AbstractEventsourcedView(val id: String, val eventLog: ActorRef) 
     if (eventBehaviour.isEmpty) eventBehaviour = Some(handler)
     else throw new IllegalStateException("Actor event behaviour has already been set with setOnEvent(...).  " +
       "Use eventContext.become(...) to change it.")
+
+  /**
+   * Java API that sets this actor's [[EventsourcedView.onEvent event]] handler.
+   *
+   * Supplied with a partial function that defines the actor's event handling behaviour.
+   * Use [[$akkaReceiveBuilder ReceiveBuilder]] to define the behaviour.
+   *
+   * If [[onEvent]] is implemented, the supplied behaviour is ignored.
+   *
+   * @param handler a function that defines this actor's event handling behaviour.
+   * @see [[EventsourcedView]]
+   */
+  final protected def setOnEvent(handler: AbstractActor.Receive): Unit =
+    setOnEvent(handler.onMessage.asInstanceOf[Receive])
 
   /**
    * Java API that sets this actor's [[EventsourcedView.onSnapshot snapshot]] handler.
@@ -183,6 +213,20 @@ abstract class AbstractEventsourcedView(val id: String, val eventLog: ActorRef) 
       "Use snapshotContext.become(...) to change it.")
 
   /**
+   * Java API that sets this actor's [[EventsourcedView.onSnapshot snapshot]] handler.
+   *
+   * Supplied with a partial function that defines the actor's snapshot handling behaviour.
+   * Use [[$akkaReceiveBuilder ReceiveBuilder]] to define the behaviour.
+   *
+   * If [[onSnapshot]] is implemented, the supplied behaviour is ignored.
+   *
+   * @param handler a function that defines this actor's snapshot handling behaviour.
+   * @see [[EventsourcedView]]
+   */
+  final protected def setOnSnapshot(handler: AbstractActor.Receive): Unit =
+    setOnSnapshot(handler.onMessage.asInstanceOf[Receive])
+
+  /**
    * Java API that sets this actor's [[EventsourcedView.onRecovery recovery]] handler.
    *
    * Supplied with a result handler that defines the actor's recover handling behaviour.
@@ -197,4 +241,9 @@ abstract class AbstractEventsourcedView(val id: String, val eventLog: ActorRef) 
     if (recoveryHandler.isEmpty) recoveryHandler = Some(handler)
     else throw new IllegalStateException("Actor recover behaviour has already been set with setOnRecover(...).  " +
       "The behaviour can only be set once.")
+
+  /**
+   * Creates a new empty `ReceiveBuilder`. Mimics [[AbstractActor.receiveBuilder()]].
+   */
+  final def receiveBuilder(): ReceiveBuilder = ReceiveBuilder.create()
 }

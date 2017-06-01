@@ -50,7 +50,7 @@ public class OrderManager extends AbstractEventsourcedView {
         this.replicaId = replicaId;
         this.orderActors = HashMap.empty();
 
-        setOnCommand(ReceiveBuilder
+        setOnCommand(receiveBuilder()
                 .match(OrderCommand.class, c -> orderActor(c.orderId).tell(c, sender()))
                 .match(SaveSnapshot.class, c -> orderActor(c.orderId).tell(c, sender()))
                 .match(Resolve.class, c -> orderActor(c.id()).tell(c, sender()))
@@ -58,7 +58,7 @@ public class OrderManager extends AbstractEventsourcedView {
                 .match(GetState.class, c -> !orderActors.isEmpty(), c -> replyState(sender()))
                 .build());
 
-        setOnEvent(ReceiveBuilder
+        setOnEvent(receiveBuilder()
                 .match(OrderCreated.class, e -> !orderActors.containsKey(e.orderId), e -> orderActor(e.orderId))
                 .build());
     }

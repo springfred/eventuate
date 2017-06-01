@@ -30,7 +30,7 @@ public class Emitter extends AbstractEventsourcedActor {
     public Emitter(String id, ActorRef eventLog) {
         super(id, eventLog);
 
-        setOnCommand(ReceiveBuilder
+        setOnCommand(receiveBuilder()
                 .match(CreateCustomer.class,
                         cmd -> persist(new CustomerCreated(highestCustomerId + 1, cmd.first, cmd.last, cmd.address), ResultHandler.on(
                                 c -> sender().tell(c, self()),
@@ -46,7 +46,7 @@ public class Emitter extends AbstractEventsourcedActor {
                 )
                 .build());
 
-        setOnEvent(ReceiveBuilder
+        setOnEvent(receiveBuilder()
                 .match(CustomerCreated.class,
                         evt -> highestCustomerId = evt.cid
                 )

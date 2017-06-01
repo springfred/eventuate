@@ -41,15 +41,15 @@ public class AbstractEventsourcedViewSpec extends BaseSpec {
         public TestEventsourcedView(final String id, final ActorRef eventProbe, final ActorRef msgProbe) {
             super(id, eventProbe);
 
-            setOnCommand(ReceiveBuilder
+            setOnCommand(receiveBuilder()
                     .match(Ping.class, p -> msgProbe.tell(new Pong(p.i()), self()))
                     .build());
 
-            setOnEvent(ReceiveBuilder
+            setOnEvent(receiveBuilder()
                     .matchAny(ev -> msgProbe.tell(Tuple.of(ev, lastVectorTimestamp(), lastSequenceNr()), self()))
                     .build());
 
-            setOnSnapshot(ReceiveBuilder
+            setOnSnapshot(receiveBuilder()
                     .matchAny(s -> msgProbe.tell("snapshot received", self()))
                     .build());
         }
@@ -70,7 +70,7 @@ public class AbstractEventsourcedViewSpec extends BaseSpec {
         public TestBehaviourView(final String id, final ActorRef eventProbe, final ActorRef msgProbe) {
             super(id, eventProbe);
 
-            setOnCommand(ReceiveBuilder
+            setOnCommand(receiveBuilder()
                     .match(Ping.class, p -> msgProbe.tell(new Pong(p.i()), self()))
                     .matchEquals("become-ping", c -> commandContext().become(ping(msgProbe), false))
                     .matchEquals("unbecome", c -> commandContext().unbecome())
@@ -78,10 +78,10 @@ public class AbstractEventsourcedViewSpec extends BaseSpec {
         }
 
         private PartialFunction<Object, BoxedUnit> ping(final ActorRef msgProbe) {
-            return ReceiveBuilder
+            return receiveBuilder()
                     .match(Pong.class, p -> msgProbe.tell(new Ping(p.i()), self()))
                     .matchEquals("unbecome", c -> commandContext().unbecome())
-                    .build();
+                    .build().onMessage();
         }
     }
 
